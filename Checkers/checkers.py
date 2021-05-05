@@ -5,8 +5,6 @@ simple checkers game.
 '''
 #REQUIRED LIBRARIES
 ###################################################################################################
-import numpy
-
 from sys import stdout
 from os import system, name
 
@@ -14,9 +12,18 @@ from os import system, name
 ###################################################################################################
 
 class game_state:
-    end_game = False
+    end_game = None
 
     player_turn = 'PLAYER_ONE'
+
+class token:
+    PLAYER_CONTROL = None
+    ROW            = None
+    COLUMN         = None
+    neighbors      = []
+
+    def __init__(self):
+        return
 
 class gameboard:
     VERTICAL_BORDER   = '|'
@@ -30,15 +37,43 @@ class gameboard:
     PLAYER_TWO_TOKEN = 'o'
     PLAYER_TWO_QUEEN = 'O'
 
-    gameboard = [[EMPTY_CELL for x in range(MAX_WIDTH)] for x in range(MAX_HEIGHT)]
+    gameboard = None
 
     def __init__(self):
-        counter = 0
+        # Initialize board with spaces
+        self.gameboard = [[self.EMPTY_CELL for x in range(self.MAX_WIDTH)] for x in range(self.MAX_HEIGHT)]
+
         for index_row, every_row in enumerate(self.gameboard):
             for index_column, every_column in enumerate(every_row):
-                self.gameboard[index_row][index_column] = counter
+                # If we are on Player Two side,
+                if index_row <= 2:
+                    # For every cell in index_row,
+                    for every_cell in range(len(every_row)):
+                        # If we are in an Odd Row,
+                        if index_row % 2:
+                            # If we are in an Odd Cell,
+                            if not every_cell % 2:
+                                self.gameboard[index_row][every_cell] = self.PLAYER_TWO_TOKEN
+                        else:
+                            # If we are in an Even Cell,
+                            if every_cell % 2:
+                                self.gameboard[index_row][every_cell] = self.PLAYER_TWO_TOKEN
 
-        print(self.gameboard)
+                # If we are on Player One side,
+                elif index_row >= 5:
+                    # For every cell in index_row,
+                    for every_cell in range(len(every_row)):
+                        # If we are in an Odd Row,
+                        if index_row % 2:
+                            # If we are in an Odd Cell,
+                            if not every_cell % 2:
+                                self.gameboard[index_row][every_cell] = self.PLAYER_ONE_TOKEN
+                        else:
+                            # If we are in an Even Cell,
+                            if every_cell % 2:
+                                self.gameboard[index_row][every_cell] = self.PLAYER_ONE_TOKEN
+
+        return
 
     def print_board(self):
         # clear_terminal()
@@ -49,6 +84,7 @@ class gameboard:
                 stdout.write(f' {self.gameboard[column_index][row_index]} |')
             stdout.write(f'\n')
         stdout.write(f'{(" " + (self.HORIZONTAL_BORDER * 3)) * self.MAX_WIDTH}\n')
+        return
 
 #DEFINED FUNCTIONS
 ###################################################################################################
@@ -62,7 +98,8 @@ def clear_terminal():
 ###################################################################################################
 
 def main():
-    end_game = False
+    this_game_state = game_state()
+    this_game_state.end_game = False
     my_gameboard = gameboard()
     my_gameboard.print_board()
     while True:
